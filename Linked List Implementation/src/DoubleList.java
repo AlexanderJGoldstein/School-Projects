@@ -99,7 +99,7 @@ public class DoubleList<E> implements Iterable<E> {
 
         @Override
         public boolean hasNext() {
-            if (current.next() == null)
+            if (current.next() == tail.next())
                 return false;
             else
                 return true;
@@ -192,9 +192,6 @@ public class DoubleList<E> implements Iterable<E> {
             current = oldNext;
         }
         current.prev().setNext(tail);
-        iter = iterator();
-        while(iter.hasNext())
-            System.out.println(iter.next());
     }
 
 }
