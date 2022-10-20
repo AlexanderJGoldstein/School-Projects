@@ -1,0 +1,16 @@
+//Alex Goldstein
+CHIP securityCircuit{
+    //mS= Motion Sensor
+    //dA = Door Ajar
+    //pB = Panic Button
+    //rB = Relax Button
+    //out = Contact Authorities
+    IN mS, dA, pB, rB;
+    OUT out;
+
+    PARTS:
+    And(a=mS, b=dA, out=cons);
+    Or(a=cons, b=pB, out=triggers);
+    Not(in=rB, out=notrB);
+    And(a=triggers, b=notrB, out=out);
+}

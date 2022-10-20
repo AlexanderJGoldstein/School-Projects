@@ -1,0 +1,1 @@
+java --enable-preview -jar VM-to-ASM.jar

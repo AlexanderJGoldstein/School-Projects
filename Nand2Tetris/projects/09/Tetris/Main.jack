@@ -1,0 +1,44 @@
+class Main{
+    function void main(){
+        var Matrix matrix;
+        var Tetromino mino;
+        var String input;
+        var String question;
+        let question = "What is the Tetromino type you want to generate? ";
+        let matrix = Matrix.new();
+        do Output.moveCursor(20, 0);
+        do matrix.drawMatrix();
+
+        let input = Keyboard.readLine(question);
+        let mino = Tetromino.new(input, matrix);
+        do mino.drawMino();
+        do input.dispose();
+        while(true){
+            do Output.moveCursor(20, 0);
+            let input = Keyboard.readLine(question);
+            //Change this to be done on next input
+            if(Strings.equals(input, "CW")){
+                do mino.rotateCW(false);
+            } else {if(Strings.equals(input, "CCW")){
+                do mino.rotateCCW(false);
+            } else {if(Strings.equals(input, "X")){
+                do mino.moveLeft();
+            } else {if(Strings.equals(input, "C")){
+                do mino.moveRight();
+            } else {if(Strings.equals(input, "V")){
+                do mino.descend();
+            } else {
+                do mino.dispose();
+                let mino = Tetromino.new(input, matrix);
+            }}}}}
+            do input.dispose();
+            do matrix.lineClear();
+            do mino.drawMino();
+            do Output.moveCursor(21, 0);
+            do Output.printString(mino.getType());
+            do Output.printInt(mino.getRot());
+        }
+
+        return;
+    }
+}

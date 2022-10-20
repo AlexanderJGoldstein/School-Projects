@@ -1,0 +1,356 @@
+class Tetromino {
+    field int x, y; //Game Matrix location of the tetromino
+    field Array blocks; //4x4 array denoting which blocks (relative to the top left) are occupied by the tetromino
+    field String type; //String containing the single letter representation of the tetromino (T=0,O=1,I=2,Z=3,S=4,J=5,L=6)
+    field int rot; //indicates the current rotations clockwise
+    field Matrix matrix;
+    
+    //U|0|1|2|3
+    //0|x|x|x|x
+    //1|x|x|x|x
+    //2|x|x|x|x
+    //3|x|x|x|x
+
+    //So for type = T, rot = 0
+    //U|0|1|2|3
+    //0|x|O|x|x
+    //1|O|O|O|x
+    //2|x|x|x|x
+    //3|x|x|x|x
+
+    
+    constructor Tetromino new(String Atype, Matrix Amatrix){
+        var int cyci;
+        let matrix = Amatrix;
+        let type = String.new(1);
+        let type = type.appendChar(Atype.charAt(0));
+        let blocks = Array.new(16);
+        let cyci = 0;
+        while(cyci < 16){
+            let blocks[cyci] = 0;
+            let cyci = cyci + 1;
+        }
+        let cyci = 0;
+        if(Strings.equals(type, "T")){
+            let blocks[1] = 1;
+            let blocks[4] = 1;
+            let blocks[5] = 1;
+            let blocks[6] = 1;
+        }
+        if(Strings.equals(type, "O")){
+            let blocks[5] = 1;
+            let blocks[6] = 1;
+            let blocks[9] = 1;
+            let blocks[10] = 1;
+        }
+        if(Strings.equals(type, "I")){
+            let blocks[1] = 1;
+            let blocks[5] = 1;
+            let blocks[9] = 1;
+            let blocks[13] = 1;
+        }
+        if(Strings.equals(type, "Z")){
+            let blocks[0] = 1;
+            let blocks[1] = 1;
+            let blocks[5] = 1;
+            let blocks[6] = 1;
+        }
+        if(Strings.equals(type, "S")){
+            let blocks[1] = 1;
+            let blocks[2] = 1;
+            let blocks[4] = 1;
+            let blocks[5] = 1;
+        }
+        if(Strings.equals(type, "J")){
+            let blocks[1] = 1;
+            let blocks[5] = 1;
+            let blocks[8] = 1;
+            let blocks[9] = 1;
+        }
+        if(Strings.equals(type, "L")){
+            let blocks[1] = 1;
+            let blocks[5] = 1;
+            let blocks[9] = 1;
+            let blocks[10] = 1;
+        }
+        
+        let rot = 0;
+        let x = matrix.getWidth()/2;
+        let x = x - 2;
+        let y = 0;
+        if(Strings.equals(type, "O")){
+            let y = -1;
+        }
+
+
+        return this;
+    }
+
+    constructor Tetromino copyMino(Tetromino orig){
+        var int cyci;
+        var String origType;
+        var Array origBlocks;
+        let cyci = 0;
+        let origBlocks = orig.getBlocks();
+        let blocks = Array.new(16);
+        while(cyci < 16){
+            let blocks[cyci] = origBlocks[cyci];
+            let cyci = cyci + 1;
+        }
+        let origType = orig.getType();
+        let type = String.new(1);
+        let rot = orig.getRot();
+        let x = orig.getX();
+        let y = orig.getY();
+        let matrix = orig.getMatrix();
+        let type = origType;
+        return this;
+    }
+
+    method String getType(){
+        return type;
+    }
+    
+    method int getX(){
+        return x;
+    }
+
+    method int getY(){
+        return y;
+    }
+
+    method int getRot(){
+        return rot;
+    }
+
+    method Array getBlocks(){
+        return blocks;
+    }
+
+    method Matrix getMatrix(){
+        return matrix;
+    }
+
+    method void descend(){
+        var Tetromino copy;
+        var boolean collision;
+        let y = y + 1;
+        let copy = Tetromino.copyMino(this);
+        let collision = collideTest(copy);
+        do copy.dispose();
+        if(collision){
+            let y = y - 1;
+            //There should also be a command for setting the mino in place on the matrix
+            do placeMino();
+        }
+        return;
+    }
+
+    method void moveLeft(){
+        var Tetromino copy;
+        var boolean collision;
+        let x = x - 1;
+        let copy = Tetromino.copyMino(this);
+        let collision = collideTest(copy);
+        do copy.dispose();
+        if(collision){
+            let x = x + 1;
+        }
+        return;
+    }
+
+    method void moveRight(){
+        var Tetromino copy;
+        var boolean collision;
+        let x = x + 1;
+        let copy = Tetromino.copyMino(this);
+        let collision = collideTest(copy);
+        do copy.dispose();
+        if(collision){
+            let x = x - 1;
+        }
+        return;
+    }
+
+    method void printMino(){
+        do Screen.clearScreen();
+        do Output.moveCursor(0,0);
+        do Output.printString("Here is the Tetromino Type: ");
+        do Output.printString(type);
+        do Output.printInt(rot);
+        do Output.println();
+        do Output.printString("Here is how it is represented: ");
+        do Output.moveCursor(3,0);
+        do drawMino();
+
+        return;
+    }
+
+    method void drawMino(){
+        var int a, b;
+        let a = 0;
+        while(a < 4){
+            let b = 0;
+            while(b < 4){
+                do Screen.setColor(true);
+                if(blocks[((a)*4)+b] = 1){
+                    do Screen.drawRectangle((x+b)*10, (a+y)*10, (x+b+1)*10, (y+a+1)*10);
+                }
+                let b = b + 1;
+            }
+            do Output.println();
+            let a = a + 1;
+        }
+        return;
+    }
+
+    method void rotateCW(boolean force){
+        var int b3, a0, a1, a2, c0, c1, c2, b0, b2;
+        var boolean collision;
+        var Tetromino copy;
+        if(force){
+            let collision = false;
+        } else {
+            let copy = Tetromino.copyMino(this);
+            do copy.rotateCW(true);
+            let collision = collideTest(copy);
+            do copy.dispose();
+        }
+        if(~(collision)){
+            let rot = rot + 1;
+            if(rot = 4){
+                let rot = 0;
+            }
+
+            if(Strings.equals(type, "O")){
+                return;
+            }
+
+
+            let b3 = blocks[7];
+
+            let a0 = blocks[0];
+            let a1 = blocks[1];
+            let a2 = blocks[2];
+            let b0 = blocks[4];
+            let b2 = blocks[6];
+            let c0 = blocks[8];
+            let c1 = blocks[9];
+            let c2 = blocks[10];
+            let blocks[0] = c0;
+            let blocks[1] = b0;
+            let blocks[2] = a0;
+            let blocks[4] = c1;
+            let blocks[6] = a1;
+            let blocks[8] = c2;
+            let blocks[9] = b2;
+            let blocks[10] = a2;
+            let blocks[7] = blocks[13];
+            let blocks[13] = b3;
+        }
+
+        return;
+    }
+
+    method void rotateCCW(boolean force){
+        var int b3, a0, a1, a2, c0, c1, c2, b0, b2;
+        var boolean collision;
+        var Tetromino copy;
+        if(force){
+            let collision = false;
+        } else {
+            let copy = Tetromino.copyMino(this);
+            do copy.rotateCCW(true);
+            let collision = collideTest(copy);
+            do copy.dispose();
+        }
+        if(~(collision)) {
+            let rot = rot - 1;
+            if(rot = -1){
+                let rot = 3;
+            }
+
+            if(Strings.equals(type, "O")){
+                return;
+            }
+
+            let b3 = blocks[7];
+
+            let a0 = blocks[0];
+            let a1 = blocks[1];
+            let a2 = blocks[2];
+            let b0 = blocks[4];
+            let b2 = blocks[6];
+            let c0 = blocks[8];
+            let c1 = blocks[9];
+            let c2 = blocks[10];
+
+            let blocks[0] = a2;
+            let blocks[1] = b2;
+            let blocks[2] = c2;
+            let blocks[4] = a1;
+            let blocks[6] = c1;
+            let blocks[8] = a0;
+            let blocks[9] = b0;
+            let blocks[10] = c0;
+            let blocks[7] = blocks[13];
+            let blocks[13] = b3;
+        }
+
+        return;
+    }
+
+    method boolean collideTest(Tetromino test){
+        //This receives a tetromino object and compares to see if there is overlap between it and the matrix
+        //TODO
+        var int Mx, My;
+        var boolean output;
+        let output = false;
+        let My = 0;
+        while(My < 4){
+            let Mx = 0;
+            while(Mx < 4) {
+                if(test.getBlock((My*4)+Mx) = 1){
+                    if(matrix.getCoordinate((Mx + test.getX()), (My + test.getY())) = 1){
+                        let output = true;
+                    }
+                }
+                let Mx = Mx + 1;
+            }
+            let My = My + 1;
+        }
+        return output;
+    }
+
+    method void dispose(){
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method int getBlock(int pos){
+        return blocks[pos];
+    }
+
+    method void placeMino(){
+        var int Mx, My, i;
+        let i = 0;
+        let My = 0;
+        while(My < 4){
+            let Mx = 0;
+            while(Mx < 4) {
+                if(blocks[(My*4)+Mx] = 1){
+                    do matrix.setCoordinate(Mx + x, My + y, 1);
+                }
+                let Mx = Mx + 1;
+            }
+            let My = My + 1;
+        }
+        //TODO: Erase the tetromino
+        while(i < 16){
+            let blocks[i] = 0;
+            let i = i + 1;
+        }
+        do matrix.drawMatrix();
+        return;
+    }
+}

@@ -1,0 +1,108 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/05/CPU.hdl
+
+/**
+ * The Hack CPU (Central Processing unit), consisting of an ALU,
+ * two registers named A and D, and a program counter named PC.
+ * The CPU is designed to fetch and execute instructions written in 
+ * the Hack machine language. In particular, functions as follows:
+ * Executes the inputted instruction according to the Hack machine 
+ * language specification. The D and A in the language specification
+ * refer to CPU-resident registers, while M refers to the external
+ * memory location addressed by A, i.e. to Memory[A]. The inM input 
+ * holds the value of this location. If the current instruction needs 
+ * to write a value to M, the value is placed in outM, the address 
+ * of the target location is placed in the addressM output, and the 
+ * writeM control bit is asserted. (When writeM==0, any value may 
+ * appear in outM). The outM and writeM outputs are combinational: 
+ * they are affected instantaneously by the execution of the current 
+ * instruction. The addressM and pc outputs are clocked: although they 
+ * are affected by the execution of the current instruction, they commit 
+ * to their new values only in the next time step. If reset==1 then the 
+ * CPU jumps to address 0 (i.e. pc is set to 0 in next time step) rather 
+ * than to the address resulting from executing the current instruction. 
+ */
+
+//Alex Goldstein
+CHIP CPU {
+
+    IN  inM[16],         // M value input  (M = contents of RAM[A])
+        instruction[16], // Instruction for execution
+/*
+16-bit Instruction: ixxaccccccdddjjj
+
+i determines an A-Instruction or a C-Instruction
+i = 0 is an A-instruction (Sets the address)
+i = 1 is a C-Instruction
+
+x is blank and doesn’t matter (typically matches bit i)
+
+a determines whether the Y-Input to the ALU is the value of the current address (a=0) or the value stored in memory at the current address (a=1)
+
+The values at c determine the options for the ALU
+c1 is zx
+c2 is nx
+c3 is zy
+c4 is ny
+c5 is f
+c6 is no
+
+The values for d determine where the result of comp will be saved (A, M, or D)
+d1 is A
+d2 is D
+d3 is M
+
+The values for j determine the conditions for a jump to execute
+j1 is when less than zero
+j2 is when equal to zero
+j3 is when greater than zero
+So the values for j when I want to jump when comp is greater than or equal to zero would be 011
+*/
+        reset;           // Signals whether to re-start the current
+                         // program (reset==1) or continue executing
+                         // the current program (reset==0).
+
+    OUT outM[16],        // M value output
+        writeM,          // Write to M? 
+        addressM[15],    // Address in data memory (of M)
+        pc[15];          // address of next instruction
+
+    PARTS:
+    // Put your code here:
+
+    //Set writeM, since this is independent of the rest of the inputs, however we only write to memory on C-Instructions
+    And(a=instruction[3], b=instruction[15], out=writeM);
+
+    //Configure the A Register
+    Mux16(a=instruction, b=ALUOut, sel=instruction[15], out=Mux1);
+    Not(in=instruction[15], out=not15);
+    Or(a=not15, b=instruction[5], out=LoadA);
+    ARegister(in=Mux1, load=LoadA, out=RegA, out[0..14]=addressM);
+    //We can throw out the sixteenth bit from the A Register, as this would always be used to determine if it is an A-Instruction or a C-Instruction, when the output should only be a memory address
+
+    //Calculating with the ALU and configuring its inputs
+    Mux16(a=RegA, b=inM, sel=instruction[12], out=Y);
+    And(a=instruction[15], b=instruction[4], out=LoadD);
+    DRegister(in=ALUOut, load=LoadD, out=RegD);
+    ALU(x=RegD, y=Y, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=outM, out=ALUOut, zr=JEQ, ng=JLT);
+
+    //Logic for picking if we should jump the Program Counter, instructions[0..2] pick which condition under which we jump, so this is a multiplexor
+    Or(a=JLT, b=JEQ, out=notJGT);
+    Not(in=notJGT, out=JGT);
+    And(a=JLT, b=JGT, out=null);
+    Or(a=JGT, b=JEQ, out=JGE);
+    Or(a=JGT, b=JLT, out=JNE);
+    Or(a=JLT, b=JEQ, out=JLE);
+    Or(a=JGE, b=JLT, out=JMP);
+    Mux8Way16(a[0]=null, b[0]=JGT, c[0]=JEQ, d[0]=JGE, e[0]=JLT, f[0]=JNE, g[0]=JLE, h[0]=JMP, sel=instruction[0..2], out[0]=prejump);
+
+    //We also will only ever execute jumps on C-Instructions, so A-Instructions must not be included
+    And(a=instruction[15], b=prejump, out=jump);
+
+    //When we aren't jumping (changing the program counter), the program counter should always increment by one to move to the next line
+    Not(in=jump, out=increment);
+    PC(in=RegA, load=jump, inc=increment, reset=reset, out[0..14]=pc); 
+    //We can throw out the sixteenth bit from the program counter, as this would always be used to determine if it is an A-Instruction or a C-Instruction, when the output should only be an address
+}

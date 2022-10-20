@@ -1,0 +1,171 @@
+class Matrix {
+    field int w, h;
+    //This should contain a series of 20 arrays, each with a length of 10.
+    //Each object in each array denotes whether the spot is occupied or not.
+    field Array board;
+    field Array curRow;
+
+    constructor Matrix new(){
+        var int i, x;
+        let i = 1;
+        let x = 0;
+        let board = Array.new(21);
+        let board[0] = Array.new(12);
+        let curRow = board[0];
+        while(x < 12){
+            let curRow[x] = 1;
+            let x = x+1;
+        }
+
+        let x = 0;
+        let board[1] = Array.new(12);
+        let curRow = board[1];
+        let i = i + 1;
+        while(x < 12){
+            if(x = 5) {
+                let curRow[x] = 0;
+            } else {
+                let curRow[x] = 1;
+            }
+            let x = x + 1;
+        }
+
+        while(i < 21){
+            let x = 1;
+            let board[i] = Array.new(12);
+            let curRow = board[i];
+            let curRow[0] = 1;
+            let curRow[11] = 1;
+            while(x < 11){
+                let curRow[x] = 0;
+                let x = x + 1;
+            }
+            let i = i + 1;
+        }
+        let w = 12;
+        let h = 20;
+        return this;
+    }
+
+    method void dispose(){
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method void drawMatrix(){
+        var int x, y;
+        do Screen.clearScreen();
+        let x = 0;
+        let y = h;
+        while(~(y < 0)){
+            let curRow = board[y];
+            let x = 0;
+            while (x < w){
+                do Screen.setColor(true);
+                if(curRow[x] = 1){
+                    do Screen.drawRectangle(x*10, (h-y)*10, (x+1)*10, (h-y+1)*10);
+                }
+                let x = x + 1;
+            }
+            let y = y - 1;
+        }
+        return;
+    }
+
+    method int getWidth(){
+        return w;
+    }
+    
+    method int getCoordinate(int x, int y){
+        if(y < 0){
+            let y = 0;
+        }
+        let y = h - y;
+        let curRow = board[y];
+        return curRow[x];
+    }
+
+    method void setCoordinate(int x, int y, int value){
+        let y = h - y;
+        let curRow = board[y];
+        let curRow[x] = value;
+        return;
+    }
+    
+    method void lineClear(){
+        var int x, y, temp, tempx;
+        var Array rowAbove;
+        var String toBeRemoved;
+        var boolean full;
+        let y = h-1;
+        while(~(y < 1)){
+            let x = 0;
+            let full = true;
+            let curRow = board[y];
+            while(x < w){
+                if((curRow[x] = 0)){
+                    let full = false;
+                }
+                let x = x + 1;
+            }
+
+            if(full){
+                //TODO: Shift all rows down
+                //WHY IS IT SHIFTING THE REFERENCE ELSEWHERE
+                let temp = y;
+                while(temp < h-2){
+                    let curRow = board[temp];
+                    let rowAbove = board[temp+1];
+                    let tempx = 1;
+                    while(tempx < 12){
+                        do setCoordinate(tempx, temp, getCoordinate(tempx, temp+1));
+                        let tempx = tempx + 1;
+                    }
+                    let temp = temp + 1;
+                }
+                //let curRow = board[temp];
+                do disposeRow(board[temp]);
+                let board[temp] = Array.new(12);
+                let board[temp] = getClearedRow();
+            }
+            let y = y - 1;
+        }
+        do drawMatrix();
+        return;
+    }
+
+    method Array getClearedRow(){
+        var Array row;
+        var int x;
+        let x = 1;
+        let row = Array.new(12);
+        let row[0] = 1;
+        let row[11] = 1;
+        while(x < 11){
+            let row[x] = 0;
+            let x = x + 1;
+        }
+        return row;
+    }
+
+    method Array copyRow(Array rowToBeCopied){
+        var int i;
+        var Array out;
+        let out = Array.new(w);
+        let i = 0;
+        while(i < w){
+            if(rowToBeCopied[i] = 0){
+                let out[i] = 0;
+            } else {
+                let out[i] = 1;
+            }
+            let i = i + 1;
+        }
+        return out;
+    }
+
+    method void disposeRow(Array row){
+        do row.dispose();
+        return;
+    }
+}
