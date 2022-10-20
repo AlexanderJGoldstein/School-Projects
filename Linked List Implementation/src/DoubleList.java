@@ -96,17 +96,19 @@ public class DoubleList<E> implements Iterable<E> {
     private class DoubleIterator implements Iterator<E> {
         Link<E> current = head.next();
         boolean nextCalled = false;
+
         @Override
         public boolean hasNext() {
-            if(current.next() == null)
+            if (current.next() == null)
                 return false;
-            else 
+            else
                 return true;
         }
 
         @Override
         public E next() {
-            if(hasNext() == false) throw new NoSuchElementException();
+            if (hasNext() == false)
+                throw new NoSuchElementException();
             else {
                 Link<E> prev = current;
                 current = current.next();
@@ -117,8 +119,14 @@ public class DoubleList<E> implements Iterable<E> {
 
         @Override
         public void remove() {
-            if(nextCalled == true){
-                
+            if (nextCalled == true) {
+                Link<E> oldNext = current;
+                current = current.prev().prev();
+                current.setNext(oldNext);
+                oldNext.setPrev(current);
+                current = current.next();
+                listSize--;
+                nextCalled = false;
             } else
                 throw new IllegalStateException();
         }
@@ -129,26 +137,25 @@ public class DoubleList<E> implements Iterable<E> {
      * Add the item at the specified index.
      */
     public void add(int index, E item) {
-        if(index > listSize){
+        if (index > listSize) {
             throw new IndexOutOfBoundsException();
         }
         Link<E> insert = new Link<E>(item, null, null);
-        if(index == 0)
+        if (index == 0)
             head = insert;
-        if(index == listSize){
+        if (index == listSize) {
             tail = insert;
-        }
-        else {
+        } else {
             Link<E> current = head;
-            for(int i = 0; i < index; i++){
+            for (int i = 0; i < index; i++) {
                 current = current.next();
             }
-            if(current != null)
+            if (current != null)
                 current.setPrev(insert);
-                insert.setNext(current);
-            if(current.prev() != null)
+            insert.setNext(current);
+            if (current.prev() != null)
                 current.prev().setNext(insert);
-                insert.setPrev(current.prev());
+            insert.setPrev(current.prev());
         }
     }
 
@@ -156,13 +163,13 @@ public class DoubleList<E> implements Iterable<E> {
      * Remove and return the item at the specified index.
      */
     public E remove(int index) {
-        if(index >= listSize)
+        if (index >= listSize)
             throw new IndexOutOfBoundsException();
-        if(head == null)
+        if (head == null)
             throw new NoSuchElementException();
         Iterator<E> linkAtIndex = iterator();
         E returnVal = null;
-        for(int i = 0; i < index-1; i++)
+        for (int i = 0; i < index - 1; i++)
             returnVal = linkAtIndex.next();
         linkAtIndex.remove();
         return returnVal;
@@ -172,7 +179,22 @@ public class DoubleList<E> implements Iterable<E> {
      * Reverse the list (in place)
      */
     public void reverse() {
-
+        Iterator<E> iter = iterator();
+        Link<E> oldHead = head.next();
+        Link<E> current = oldHead;
+        head.setNext(tail.prev());
+        tail.setPrev(oldHead);
+        while(iter.hasNext()){
+            iter.next();
+            Link<E> oldNext = current.next();
+            current.setNext(current.prev());
+            current.setPrev(oldNext);
+            current = oldNext;
+        }
+        current.prev().setNext(tail);
+        iter = iterator();
+        while(iter.hasNext())
+            System.out.println(iter.next());
     }
 
 }
