@@ -28,7 +28,7 @@ public class DoubleListDriver {
     }
 
     list.reverse();
-    
+
     System.out.println("\n\nRemoving all letters less than M");
     Iterator<String> it = list.iterator();
     while (it.hasNext()) {
