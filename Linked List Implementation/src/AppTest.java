@@ -6,6 +6,11 @@ import java.util.Iterator;
 import java.lang.Math;
 
 public class AppTest{
+
+    public static void main(String[] args){
+
+    }
+    
     @Test
     public void reverseTest(){
         DoubleList<Character> originList = new DoubleList<Character>();
