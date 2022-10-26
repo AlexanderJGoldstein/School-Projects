@@ -52,8 +52,8 @@ public class DoubleListDriver {
     System.out.println("Resulting size: " + list.size());
 
     // NOT TESTED YET:
-    // Correct exception for remove before next
-    // Correct exception for next past the end.
+    // Correct exception for remove before next (Completed)
+    // Correct exception for next past the end. (Completed)
     // Still possible to add nodes after removals.
 
   }

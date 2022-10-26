@@ -193,5 +193,40 @@ public class DoubleListTest {
     }
   }
 
+  // --------------------------------------------
+  // TESTS FOR THE CORRECT ERROR RETURNED BY REMOVE IF NEXT HAS NOT BEEN CALLED
+  // --------------------------------------------
 
+  @Test
+  public void removeBeforeNextException() {
+    DoubleList<String> list = makeLetterList();
+    Iterator<String> iter = list.iterator();
+    try{
+      iter.remove();
+      assertFalse("No exception was thrown", true);
+    } catch (Exception except){
+      assertEquals("java.lang.IllegalStateException", except.getClass().getCanonicalName());
+    } catch (Error error) {
+      assertFalse("An error was thrown instead of an Exception", true);
+    }
+  }
+
+  // --------------------------------------------
+  // TESTS FOR THE CORRECT ERROR RETURNED BY NEXT IF AT END OF LIST
+  // --------------------------------------------
+
+  @Test
+  public void nextWhenAtEndException(){
+    DoubleList<String> list = makeLetterList();
+    Iterator<String> iter = list.iterator();
+    while(iter.hasNext()) iter.next();
+    try{
+      iter.next();
+      assertFalse("No exception was thrown", true);
+    } catch (Exception except){
+      assertEquals("java.util.NoSuchElementException", except.getClass().getCanonicalName());
+    } catch (Error error) {
+      assertFalse("An error was thrown instead of an Exception", true);
+    }
+  }
 }

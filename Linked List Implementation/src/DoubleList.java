@@ -4,7 +4,7 @@ import java.util.NoSuchElementException;
 /**
  * Doubly-linked list class (UNFINISHED).
  * 
- * @author ??
+ * @author Alex Goldstein
  *
  */
 public class DoubleList<E> implements Iterable<E> {
@@ -99,7 +99,8 @@ public class DoubleList<E> implements Iterable<E> {
 
 		@Override
 		public boolean hasNext() {
-            //Why is there a link just called null
+            //For whatever reason, this is necessary as reversal causes tail.next to point to a Link<null> object rather than just a null reference.
+			//This causes it to constantly reference itself in next so iterator.hasNext() will always return true without this condition
 			if (current.next() == null || current == tail)
 				return false;
 			else
