@@ -54,7 +54,7 @@ public class DoubleListDriver {
     // NOT TESTED YET:
     // Correct exception for remove before next (Completed)
     // Correct exception for next past the end. (Completed)
-    // Still possible to add nodes after removals.
+    // Still possible to add nodes after removals. (Completed)
 
   }
 

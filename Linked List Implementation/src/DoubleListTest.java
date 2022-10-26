@@ -203,12 +203,14 @@ public class DoubleListTest {
     Iterator<String> iter = list.iterator();
     try{
       iter.remove();
-      assertFalse("No exception was thrown", true);
     } catch (Exception except){
       assertEquals("java.lang.IllegalStateException", except.getClass().getCanonicalName());
+      return;
     } catch (Error error) {
       assertFalse("An error was thrown instead of an Exception", true);
+      return;
     }
+    assertFalse("No exception was thrown", true);
   }
 
   // --------------------------------------------
@@ -222,11 +224,31 @@ public class DoubleListTest {
     while(iter.hasNext()) iter.next();
     try{
       iter.next();
-      assertFalse("No exception was thrown", true);
     } catch (Exception except){
       assertEquals("java.util.NoSuchElementException", except.getClass().getCanonicalName());
+      return;
     } catch (Error error) {
       assertFalse("An error was thrown instead of an Exception", true);
+      return;
     }
+    assertFalse("No exception was thrown", true);
+  }
+
+  @Test
+  public void addNodeAfterRemoval(){
+    DoubleList<String> list = makeLetterList();
+    Iterator<String> iter = list.iterator();
+    int randomPos =  (int) (java.lang.Math.random()*25+1);
+    for(int i = 0; i < randomPos; i++) iter.next();
+    iter.remove();
+    list.add(randomPos-2, "New Val");
+    iter = list.iterator();
+    for(int i = 0; i < 26; i++){
+      if(i != randomPos-1)
+        assertEquals(Character.toString((char) (i+65)), iter.next());
+      else
+        assertEquals("New Val", iter.next());
+    }
+
   }
 }
