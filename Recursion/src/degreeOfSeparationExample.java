@@ -9,14 +9,16 @@ public class degreeOfSeparationExample {
             return this.knownPeople.contains(p2);
         }
 
-        public void meet(Person p2) {
-            this.knownPeople.add(p2);
-            p2.subMeet(this);
-        }
-
-        private void subMeet(Person p1){
-            this.knownPeople.add(p1);
-        }
+        /*
+         * public void meet(Person p2) {
+         * this.knownPeople.add(p2);
+         * p2.subMeet(this);
+         * }
+         * 
+         * private void subMeet(Person p1){
+         * this.knownPeople.add(p1);
+         * }
+         */
     }
 
     public static boolean degreeOfSeparation(Set<Person> people, Person p1, Person p2, int n) {

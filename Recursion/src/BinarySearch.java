@@ -10,7 +10,7 @@ public class BinarySearch {
             if(string.charAt(i) > element)
                 return search(string.substring(0, i), element);
             else
-                return search(string.substring(i), element);
+                return search(string.substring(i), element)+string.length()/2;
         }
     }
 }
