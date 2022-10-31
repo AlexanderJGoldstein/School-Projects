@@ -154,7 +154,6 @@ public class Assembler {
         //Configure instructions for a jump
         if(input.contains(";")){
             String jump = input.substring(input.indexOf(";") + 1);
-            System.out.println(jump);
             switch (jump) {
                 case "JGT":
                 out[15] = 1;
