@@ -52,6 +52,7 @@ public class Assembler {
             out.add(new String(temp));
             data = data.substring(data.indexOf("\n")+1);
         }
+        out.add(data);
         List<String> copy = new LinkedList<String>();
         for(String item : out){
             if(!item.isBlank())
@@ -60,7 +61,10 @@ public class Assembler {
         String[] ArrayOut = new String[copy.size()];
         for (int i = 0; i < copy.size(); i++){
             //There ends up being an extra whitespace bit at the end of each line, this exists to remove it
-            ArrayOut[i] = copy.get(i).substring(0, copy.get(i).length()-1);
+            if(copy.get(i).charAt(copy.get(i).length()-1) == 13)
+                ArrayOut[i] = copy.get(i).substring(0, copy.get(i).length()-1);
+            else
+                ArrayOut[i] = copy.get(i);
         }
 
         return ArrayOut;
@@ -150,6 +154,7 @@ public class Assembler {
         //Configure instructions for a jump
         if(input.contains(";")){
             String jump = input.substring(input.indexOf(";") + 1);
+            System.out.println(jump);
             switch (jump) {
                 case "JGT":
                 out[15] = 1;
