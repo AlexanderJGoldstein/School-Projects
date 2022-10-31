@@ -59,7 +59,8 @@ public class Assembler {
         }
         String[] ArrayOut = new String[copy.size()];
         for (int i = 0; i < copy.size(); i++){
-            ArrayOut[i] = copy.get(i);
+            //There ends up being an extra whitespace bit at the end of each line, this exists to remove it
+            ArrayOut[i] = copy.get(i).substring(0, copy.get(i).length()-1);
         }
 
         return ArrayOut;
