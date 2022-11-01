@@ -1,24 +1,27 @@
 import java.util.*;
 
 public class degreeOfSeparationExample {
-    private class Person {
+    public class Person {
         private List<Person> knownPeople = new LinkedList<Person>();
+
+        public Person(){
+
+        }
 
         public boolean knows(Person p2) {
             // Checks if person A knows Person B
             return this.knownPeople.contains(p2);
         }
 
-        /*
-         * public void meet(Person p2) {
-         * this.knownPeople.add(p2);
-         * p2.subMeet(this);
-         * }
-         * 
-         * private void subMeet(Person p1){
-         * this.knownPeople.add(p1);
-         * }
-         */
+        public void meet(Person p2) {
+            this.knownPeople.add(p2);
+            p2.subMeet(this);
+        }
+
+        private void subMeet(Person p1) {
+            this.knownPeople.add(p1);
+        }
+
     }
 
     public static boolean degreeOfSeparation(Set<Person> people, Person p1, Person p2, int n) {
@@ -33,5 +36,9 @@ public class degreeOfSeparationExample {
             }
             return false;
         }
+    }
+
+    public Person makeNewPerson(){
+        return this.new Person();
     }
 }

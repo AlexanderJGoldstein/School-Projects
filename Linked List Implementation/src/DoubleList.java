@@ -99,8 +99,10 @@ public class DoubleList<E> implements Iterable<E> {
 
 		@Override
 		public boolean hasNext() {
-            //For whatever reason, this is necessary as reversal causes tail.next to point to a Link<null> object rather than just a null reference.
-			//This causes it to constantly reference itself in next so iterator.hasNext() will always return true without this condition
+			// For whatever reason, this is necessary as reversal causes tail.next to point
+			// to a Link<null> object rather than just a null reference.
+			// This causes it to constantly reference itself in next so iterator.hasNext()
+			// will always return true without this condition
 			if (current.next() == null || current == tail)
 				return false;
 			else
@@ -121,15 +123,12 @@ public class DoubleList<E> implements Iterable<E> {
 
 		@Override
 		public void remove() {
-            //oldNext and current start pointing to the same thing once we reach the tail
+			// oldNext and current start pointing to the same thing once we reach the tail
 			if (nextCalled) {
-				Link<E> oldNext = current;
-				current = current.prev().prev();
-				current.setNext(oldNext);
-				oldNext.setPrev(current);
-				current = current.next();
-				listSize--;
 				nextCalled = false;
+				current.prev().prev().setNext(current);
+				current.setPrev(current.prev().prev());
+				listSize--;
 			} else
 				throw new IllegalStateException();
 		}
@@ -145,7 +144,7 @@ public class DoubleList<E> implements Iterable<E> {
 		}
 		Link<E> insert = new Link<E>(item, null, null);
 		Link<E> linkAtIndex = head.next();
-		for(int i = 0; i < index; i++)
+		for (int i = 0; i < index; i++)
 			linkAtIndex = linkAtIndex.next();
 		insert.setNext(linkAtIndex.next());
 		insert.setPrev(linkAtIndex);
@@ -163,7 +162,7 @@ public class DoubleList<E> implements Iterable<E> {
 			throw new NoSuchElementException();
 		Iterator<E> linkAtIndex = iterator();
 		E returnVal = null;
-		for(int i = 0; i <= index; i++)
+		for (int i = 0; i <= index; i++)
 			returnVal = linkAtIndex.next();
 		linkAtIndex.remove();
 		return returnVal;
@@ -178,7 +177,7 @@ public class DoubleList<E> implements Iterable<E> {
 		Link<E> current = oldHead;
 		head.setNext(tail.prev());
 		tail.setPrev(oldHead);
-		while(iter.hasNext()){
+		while (iter.hasNext()) {
 			iter.next();
 			Link<E> oldNext = current.next();
 			current.setNext(current.prev());

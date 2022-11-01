@@ -238,13 +238,13 @@ public class DoubleListTest {
   public void addNodeAfterRemoval(){
     DoubleList<String> list = makeLetterList();
     Iterator<String> iter = list.iterator();
-    int randomPos =  (int) (java.lang.Math.random()*25+1);
-    for(int i = 0; i < randomPos; i++) iter.next();
+    int randomPos =  (int) (java.lang.Math.random()*26);
+    for(int i = 0; i <= randomPos; i++) iter.next();
     iter.remove();
-    list.add(randomPos-2, "New Val");
+    list.add(randomPos-1, "New Val");
     iter = list.iterator();
     for(int i = 0; i < 26; i++){
-      if(i != randomPos-1)
+      if(i != randomPos)
         assertEquals(Character.toString((char) (i+65)), iter.next());
       else
         assertEquals("New Val", iter.next());
