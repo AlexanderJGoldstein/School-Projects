@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class degreeOfSeparationExample {
-    public class Person {
+    private class Person {
         private List<Person> knownPeople = new LinkedList<Person>();
 
         public Person(){
@@ -15,11 +15,7 @@ public class degreeOfSeparationExample {
 
         public void meet(Person p2) {
             this.knownPeople.add(p2);
-            p2.subMeet(this);
-        }
-
-        private void subMeet(Person p1) {
-            this.knownPeople.add(p1);
+            p2.knownPeople.add(this);
         }
 
     }
@@ -42,3 +38,6 @@ public class degreeOfSeparationExample {
         return this.new Person();
     }
 }
+//This checks if the given person has a chain of known people that is at most n people long which contains p2
+//This has a tree-like organization, so we go through each branch, checking if the person at the end of each branch knows p2.
+//Each level of the tree contains nodes corresponding to the people known by the person on the previous level of the tree
