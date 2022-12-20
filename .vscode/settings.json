@@ -2,5 +2,11 @@
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
         "Nand2Tetris/Java Libs/commons-io-2.11.0.jar"
+    ],
+    "java.project.sourcePaths": [
+        "TreeImplementation/src",
+        "Nand2Tetris/nand2tetris_simulator-master/MainClassesSource",
+        "Nand2Tetris/nand2tetris_simulator-master/HackPackageSource/Hack",
+        "Nand2Tetris"
     ]
 }

@@ -1,5 +1,5 @@
 //This program takes in a file path from the user that points to a .asm file, and then converts this file into a .hack file, which will be saved in the same directory with the same file prefix
-
+//Written by Alex Goldstein
 import java.io.*;
 import org.apache.commons.io.IOUtils;
 import java.util.*;
@@ -195,8 +195,7 @@ public class Assembler {
         } 
 
         //Configure instructions for comp
-        if(input.contains("M")) {
-            out[3] = 1;
+        if(input.contains("M")) {            out[3] = 1;
         }
         switch (input) {
             case "0":
