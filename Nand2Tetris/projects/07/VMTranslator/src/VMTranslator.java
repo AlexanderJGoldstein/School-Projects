@@ -33,19 +33,12 @@ public class VMTranslator {
             String temp = data.substring(0, data.indexOf("\n")-1);
             if(temp.contains("//"))
                 temp = temp.substring(0, temp.indexOf("//"));
-            out.add(new String(temp));
+            if(!temp.isBlank())
+                out.add(new String(temp));
             data = data.substring(data.indexOf("\n")+1);
         }
-        List<String> copy = new LinkedList<String>();
-        for(String item : out){
-            if(!item.isBlank())
-                copy.add(item);
-        }
-        String[] ArrayOut = new String[copy.size()];
-        for (int i = 0; i < copy.size(); i++){
-            ArrayOut[i] = copy.get(i);
-        }
-
+        String[] ArrayOut = new String[out.size()];
+        out.toArray(ArrayOut);
         return ArrayOut;
     }
 

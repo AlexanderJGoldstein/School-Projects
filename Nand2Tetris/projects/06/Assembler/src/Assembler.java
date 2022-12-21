@@ -51,28 +51,17 @@ public class Assembler {
     public static String[] parseASM(String data) {
         List<String> out = new LinkedList<String>();
         while (data.contains("\n")) {
-            String temp = data.substring(0, data.indexOf("\n"));
+            String temp = data.substring(0, data.indexOf("\n")-1);
             if (temp.contains("//"))
                 temp = temp.substring(0, temp.indexOf("//"));
-            out.add(new String(temp));
+            if (!temp.isBlank())
+                out.add(new String(temp));
             data = data.substring(data.indexOf("\n") + 1);
         }
-        out.add(data);
-        List<String> copy = new LinkedList<String>();
-        for (String item : out) {
-            if (!item.isBlank())
-                copy.add(item);
-        }
-        String[] ArrayOut = new String[copy.size()];
-        for (int i = 0; i < copy.size(); i++) {
-            // There ends up being an extra whitespace bit at the end of each line, this
-            // exists to remove it
-            if (copy.get(i).charAt(copy.get(i).length() - 1) == 13)
-                ArrayOut[i] = copy.get(i).substring(0, copy.get(i).length() - 1);
-            else
-                ArrayOut[i] = copy.get(i);
-        }
-
+        if (!data.isBlank())
+            out.add(data);
+        String[] ArrayOut = new String[out.size()];
+        out.toArray(ArrayOut);
         return ArrayOut;
     }
 
