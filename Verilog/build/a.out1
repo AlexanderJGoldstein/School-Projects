@@ -1,0 +1,22 @@
+**** module/scope: DFlipFlop
+     Flip-Flops   : 1
+     Logic Gates  : 0
+     LOG[13]: 1 unaccounted
+     LOG[14]: 1 unaccounted
+**** TOTALS
+     Flip-Flops   : 1
+     Logic Gates  : 0
+     LOG[13]: 1 unaccounted
+     LOG[14]: 1 unaccounted
+**** module/scope: TFlipFlop
+     Flip-Flops   : 1
+     Logic Gates  : 3
+     MUX[2]: 1 slices
+     LOG[13]: 1 unaccounted
+     LOG[14]: 1 unaccounted
+**** TOTALS
+     Flip-Flops   : 1
+     Logic Gates  : 3
+     MUX[2]: 1 slices
+     LOG[13]: 1 unaccounted
+     LOG[14]: 1 unaccounted

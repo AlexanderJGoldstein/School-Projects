@@ -1,0 +1,61 @@
+toplevel: DMux8Way
+name: VerilogRecreation
+files: 
+  - name: "Mux8Way16.v"
+    file_type: "verilogSource-2005"
+    is_include_file: false
+    include_path: ""
+    logical_name: ""
+  - name: "Mux16_tb.v"
+    file_type: "verilogSource-2005"
+    is_include_file: false
+    include_path: ""
+    logical_name: ""
+  - name: "Mux4Way16.v"
+    file_type: "verilogSource-2005"
+    is_include_file: false
+    include_path: ""
+    logical_name: ""
+  - name: "Mux16.v"
+    file_type: "verilogSource-2005"
+    is_include_file: false
+    include_path: ""
+    logical_name: ""
+  - name: "Mux.v"
+    file_type: "verilogSource-2005"
+    is_include_file: false
+    include_path: ""
+    logical_name: ""
+  - name: "DMux8Way.v"
+    file_type: "verilogSource-2005"
+    is_include_file: false
+    include_path: ""
+    logical_name: ""
+  - name: "DMux4Way.v"
+    file_type: "verilogSource-2005"
+    is_include_file: false
+    include_path: ""
+    logical_name: ""
+  - name: "DMux.v"
+    file_type: "verilogSource-2005"
+    is_include_file: false
+    include_path: ""
+    logical_name: ""
+  - name: "And16.v"
+    file_type: "verilogSource-2005"
+    is_include_file: false
+    include_path: ""
+    logical_name: ""
+  - name: "And.v"
+    file_type: "verilogSource-2005"
+    is_include_file: false
+    include_path: ""
+    logical_name: ""
+tool_options: 
+  icarus: 
+    installation_path: ""
+    timescale: ""
+    iverilog_options: 
+      - ""
+    linter_options: 
+      - ""

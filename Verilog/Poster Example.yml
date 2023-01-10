@@ -1,0 +1,16 @@
+toplevel: ""
+name: "Poster Example"
+files: 
+  - name: "Poster_Example1.v"
+    file_type: "verilogSource-2005"
+    is_include_file: false
+    include_path: ""
+    logical_name: ""
+tool_options: 
+  icarus: 
+    installation_path: ""
+    timescale: ""
+    iverilog_options: 
+      - ""
+    linter_options: 
+      - ""
