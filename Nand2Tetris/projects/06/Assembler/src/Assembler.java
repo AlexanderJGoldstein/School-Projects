@@ -2,7 +2,6 @@
 //This program takes in a file path from the user that points to a .asm file, and then converts this file into a .hack file, which will be saved in the same directory with the same file prefix
 //Written by Alex Goldstein
 import java.io.*;
-import org.apache.commons.io.IOUtils;
 import java.util.*;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -31,9 +30,10 @@ public class Assembler {
 
     public static void main(String[] args) throws Exception {
         // Start file reading
-        String data;
+        String data = "";
         FileInputStream fis = new FileInputStream(getFilePath());
-        data = IOUtils.toString(fis, "UTF-8");
+        for(byte e : fis.readAllBytes())
+            data += (char) e;
         writeOutBinary(data);
     }
 

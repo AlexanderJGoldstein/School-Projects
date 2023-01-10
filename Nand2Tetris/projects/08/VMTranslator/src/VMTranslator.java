@@ -1,10 +1,7 @@
 //This takes in VM code from a file designated by the user, and outputs its interpreted hack code in the same path
 
 import java.io.*;
-import org.apache.commons.io.*;
 import java.util.*;
-
-
 import java.io.FileWriter;
 
 public class VMTranslator {
@@ -21,7 +18,9 @@ public class VMTranslator {
     public static void main(String[] args) throws Exception {
         FileInputStream fis = new FileInputStream(getFilePath());
         createFile();
-        String data = IOUtils.toString(fis, "UTF-8");
+        String data = "";
+        for(byte e : fis.readAllBytes())
+            data += (char) e;
 
         //Creates a list of loaded files
         List<String> files = new LinkedList<String>();
@@ -48,12 +47,10 @@ public class VMTranslator {
             temp = temp.substring(temp.indexOf("\ncall") + 6);
             String depName = temp.substring(0, temp.indexOf("."));
             if(!files.contains(depName)){
-                try {
-                    fis = new FileInputStream(fileDirectory + depName + ".vm");
-                } catch (FileNotFoundException e){
-                    fis = new FileInputStream("c:/Users/AceJG/OneDrive/Documents/Nand2Tetris/tools/OS/" + depName + ".vm");
-                }
-                data += "\n" + IOUtils.toString(fis, "UTF-8");
+                fis = new FileInputStream(fileDirectory + depName + ".vm");
+                data += "\n";
+                for(byte e : fis.readAllBytes())
+                    data += (char) e;
                 files.add(depName);
             }
         }

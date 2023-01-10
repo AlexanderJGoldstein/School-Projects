@@ -1,7 +1,6 @@
 //Written by Alex Goldstein
 
 import java.io.*;
-import org.apache.commons.io.IOUtils;
 import java.util.*;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,9 +10,14 @@ public class FirstPass {
 
     public static void main(String[] args) throws Exception {
         // Start file reading
-        String data;
+        String data = "";
         FileInputStream fis = new FileInputStream(getFilePath());
-        data = IOUtils.toString(fis, "UTF-8");
+        byte[] bytes = fis.readAllBytes();
+        for(byte a : bytes){
+            data += (char) a;
+        }
+        fis.close();
+        System.out.println(data);
         writeToFile(parseASM(data));
     }
 
