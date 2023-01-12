@@ -1,8 +1,11 @@
 //This takes in VM code from a file designated by the user, and outputs its interpreted hack code in the same path
+import java.util.Scanner;
+import java.util.LinkedList;
+import java.util.List;
 
-import java.io.*;
-import java.util.*;
 import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 public class VMTranslator {
     static String filePath = "";
@@ -18,10 +21,11 @@ public class VMTranslator {
     public static void main(String[] args) throws Exception {
         FileInputStream fis = new FileInputStream(getFilePath());
         createFile();
+        StringBuilder dataBuilder = new StringBuilder();
         String data = "";
         for(byte e : fis.readAllBytes())
-            data += (char) e;
-
+            dataBuilder.append((char) e);
+        data = dataBuilder.toString();
         //Creates a list of loaded files
         List<String> files = new LinkedList<String>();
         String origFileName = new String(filePath);
@@ -48,9 +52,10 @@ public class VMTranslator {
             String depName = temp.substring(0, temp.indexOf("."));
             if(!files.contains(depName)){
                 fis = new FileInputStream(fileDirectory + depName + ".vm");
-                data += "\n";
+                dataBuilder.append("\n");
                 for(byte e : fis.readAllBytes())
-                    data += (char) e;
+                    dataBuilder.append((char) e);
+                data = dataBuilder.toString();
                 files.add(depName);
             }
         }
@@ -112,82 +117,82 @@ public class VMTranslator {
                 in = in.substring(0, in.indexOf("\t"));
         if(in != "")
             args.add(in);
-        String outputInstruction = "";
+        StringBuilder outputInstruction = new StringBuilder();
         boolean moveF = true;
         switch (args.size()){
             case 1:
                 switch (args.get(0)){
                     case "add":
-                        outputInstruction += "@SP\nM=M-1\nA=M\n";
-                        outputInstruction += "D=M\n@SP\nM=M-1\nA=M\nM=D+M";
+                        outputInstruction.append("@SP\nM=M-1\nA=M\n");
+                        outputInstruction.append("D=M\n@SP\nM=M-1\nA=M\nM=D+M");
                         break;
                     
                     case "sub":
-                        outputInstruction += "@SP\nM=M-1\nA=M\n";
-                        outputInstruction += "D=M\n@SP\nM=M-1\nA=M\nM=M-D";
+                        outputInstruction.append("@SP\nM=M-1\nA=M\n");
+                        outputInstruction.append("D=M\n@SP\nM=M-1\nA=M\nM=M-D");
                         break;
 
                     case "and":
-                        outputInstruction += "@SP\nM=M-1\nA=M\n";
-                        outputInstruction += "D=M\n@SP\nM=M-1\nA=M\nM=D&M";
+                        outputInstruction.append("@SP\nM=M-1\nA=M\n");
+                        outputInstruction.append("D=M\n@SP\nM=M-1\nA=M\nM=D&M");
                         break;
                     
                     case "or":
-                        outputInstruction += "@SP\nM=M-1\nA=M\n";
-                        outputInstruction += "D=M\n@SP\nM=M-1\nA=M\nM=D|M";
+                        outputInstruction.append("@SP\nM=M-1\nA=M\n");
+                        outputInstruction.append("D=M\n@SP\nM=M-1\nA=M\nM=D|M");
                         break;
 
                     case "not":
-                        outputInstruction += "@SP\nM=M-1\nA=M\n";
-                        outputInstruction += "M=!M";
+                        outputInstruction.append("@SP\nM=M-1\nA=M\n");
+                        outputInstruction.append("M=!M");
                         break;
 
                     case "neg":
-                        outputInstruction += "@SP\nM=M-1\nA=M\n";
-                        outputInstruction += "M=-M";
+                        outputInstruction.append("@SP\nM=M-1\nA=M\n");
+                        outputInstruction.append("M=-M");
                         break;
 
                     case "lt":
-                        outputInstruction += "@SP\nM=M-1\nA=M\n";
-                        outputInstruction += "D=M\n@SP\nM=M-1\nA=M\nD=M-D\nM=-1\n@COMP" + NumCompare + "\nD;JLT\n@SP\nA=M\nM=0\n(COMP" + NumCompare + ")";
+                        outputInstruction.append("@SP\nM=M-1\nA=M\n");
+                        outputInstruction.append("D=M\n@SP\nM=M-1\nA=M\nD=M-D\nM=-1\n@COMP" + NumCompare + "\nD;JLT\n@SP\nA=M\nM=0\n(COMP" + NumCompare + ")");
                         NumCompare++;
                         break;
 
                     case "gt":
-                        outputInstruction += "@SP\nM=M-1\nA=M\n";
-                        outputInstruction += "D=M\n@SP\nM=M-1\nA=M\nD=M-D\nM=-1\n@COMP" + NumCompare + "\nD;JGT\n@SP\nA=M\nM=0\n(COMP" + NumCompare + ")";
+                        outputInstruction.append("@SP\nM=M-1\nA=M\n");
+                        outputInstruction.append("D=M\n@SP\nM=M-1\nA=M\nD=M-D\nM=-1\n@COMP" + NumCompare + "\nD;JGT\n@SP\nA=M\nM=0\n(COMP" + NumCompare + ")");
                         NumCompare++;
                         break;
 
                     case "eq":
-                        outputInstruction += "@SP\nM=M-1\nA=M\n";
-                        outputInstruction += "D=M\n@SP\nM=M-1\nA=M\nD=M-D\nM=-1\n@COMP" + NumCompare + "\nD;JEQ\n@SP\nA=M\nM=0\n(COMP" + NumCompare + ")";
+                        outputInstruction.append("@SP\nM=M-1\nA=M\n");
+                        outputInstruction.append("D=M\n@SP\nM=M-1\nA=M\nD=M-D\nM=-1\n@COMP" + NumCompare + "\nD;JEQ\n@SP\nA=M\nM=0\n(COMP" + NumCompare + ")");
                         NumCompare++;
                         break;
 
                     case "return":
                     //FRAME = LCL
-                    outputInstruction += "@LCL\nD=M\n@R13\nM=D";
+                    outputInstruction.append("@LCL\nD=M\n@R13\nM=D");
                     //RET = *(FRAME-5)
-                    outputInstruction += "\n@5\nD=A\n@R13\nA=M-D\nD=M\n@R14\nM=D";
+                    outputInstruction.append("\n@5\nD=A\n@R13\nA=M-D\nD=M\n@R14\nM=D");
                     //*ARG = pop()
-                    outputInstruction += "\n@SP\nM=M-1\nA=M\nD=M\n@ARG\nA=M\nM=D";
+                    outputInstruction.append("\n@SP\nM=M-1\nA=M\nD=M\n@ARG\nA=M\nM=D");
                     //SP = ARG+1
-                    outputInstruction += "\n@ARG\nD=M+1\n@SP\nM=D";
+                    outputInstruction.append("\n@ARG\nD=M+1\n@SP\nM=D");
                     //THAT = *(FRAME-1)
-                    outputInstruction += "\n@1\nD=A\n@R13\nA=M-D\nD=M\n@THAT\nM=D";
+                    outputInstruction.append("\n@1\nD=A\n@R13\nA=M-D\nD=M\n@THAT\nM=D");
                     //THIS = *(FRAME-2)
-                    outputInstruction += "\n@2\nD=A\n@R13\nA=M-D\nD=M\n@THIS\nM=D";
+                    outputInstruction.append("\n@2\nD=A\n@R13\nA=M-D\nD=M\n@THIS\nM=D");
                     //ARG = *(FRAME-3)
-                    outputInstruction += "\n@3\nD=A\n@R13\nA=M-D\nD=M\n@ARG\nM=D";
+                    outputInstruction.append("\n@3\nD=A\n@R13\nA=M-D\nD=M\n@ARG\nM=D");
                     //LCL = *(FRAME-4)
-                    outputInstruction += "\n@4\nD=A\n@R13\nA=M-D\nD=M\n@LCL\nM=D";
+                    outputInstruction.append("\n@4\nD=A\n@R13\nA=M-D\nD=M\n@LCL\nM=D");
                     //goto RET
                     if(sysMainReturn){
                         sysMainReturn = false;
-                        outputInstruction += "\n(END_PRGM)\n@END_PRGM\n0;JMP";
+                        outputInstruction.append("\n(END_PRGM)\n@END_PRGM\n0;JMP");
                     } else
-                        outputInstruction += "\n@R14\nA=M\n0;JMP";
+                        outputInstruction.append("\n@R14\nA=M\n0;JMP");
                     currentFunction = "";
                     moveF = false;
                     break;
@@ -200,17 +205,17 @@ public class VMTranslator {
             case 2:
                 switch (args.get(0)){
                     case "label":
-                        outputInstruction += "(" + args.get(1) + ")";
+                        outputInstruction.append("(" + args.get(1) + ")");
                         moveF = false;
                         break;
 
                     case "goto":
-                        outputInstruction += "@" + args.get(1) + "\n0;JMP";
+                        outputInstruction.append("@" + args.get(1) + "\n0;JMP");
                         break;
                     
                     case "if-goto":
                         //False in VM is 0
-                        outputInstruction += "@SP\nM=M-1\nA=M\nD=M\n@" + args.get(1) + "\nD;JNE";
+                        outputInstruction.append("@SP\nM=M-1\nA=M\nD=M\n@" + args.get(1) + "\nD;JNE");
                         moveF = false;
                         break;
 
@@ -224,28 +229,28 @@ public class VMTranslator {
                 switch (args.get(0)){
                     case "pop":
                         moveF = false;
-                        outputInstruction += location(args.get(1), args.get(2));
-                        outputInstruction += "D=A\n@SP\nA=M\nM=D\n";
-                        outputInstruction += "@SP\nM=M-1\nA=M\nD=M\nA=A+1\nA=M\n";
-                        outputInstruction += "M=D";
+                        outputInstruction.append(location(args.get(1), args.get(2)));
+                        outputInstruction.append("D=A\n@SP\nA=M\nM=D\n");
+                        outputInstruction.append("@SP\nM=M-1\nA=M\nD=M\nA=A+1\nA=M\n");
+                        outputInstruction.append("M=D");
                         break;
                     
                     case "push":
-                        outputInstruction += location(args.get(1), args.get(2));
+                        outputInstruction.append(location(args.get(1), args.get(2)));
                         if(args.get(1).contains("constant") )
-                            outputInstruction += "D=A\n";
+                            outputInstruction.append("D=A\n");
                         else
-                            outputInstruction += "D=M\n";
-                        outputInstruction += "@SP\nA=M\nM=D";
+                            outputInstruction.append("D=M\n");
+                        outputInstruction.append("@SP\nA=M\nM=D");
                         break;
                     
                     case "function":
                         //(f)
-                        outputInstruction += "(" + args.get(1) + ")\n@SP\nA=M\nM=0";
+                        outputInstruction.append("(" + args.get(1) + ")\n@SP\nA=M\nM=0");
                         
                         //repeat n times {push constant 0}
                         for(int i = 0; i < Integer.parseInt(args.get(2)); i++)
-                            outputInstruction += "\n@SP\nM=M+1\nA=M\nM=0";
+                            outputInstruction.append("\n@SP\nM=M+1\nA=M\nM=0");
                         
                         moveF = false;
                         currentFunction = args.get(1).substring(0, args.get(1).indexOf("."));
@@ -253,23 +258,23 @@ public class VMTranslator {
 
                     case "call":
                         //push return-address
-                        outputInstruction += "@RET" + returnIter + "\nD=A\n@SP\nA=M\nM=D";
+                        outputInstruction.append("@RET" + returnIter + "\nD=A\n@SP\nA=M\nM=D");
                         //push LCL
-                        outputInstruction += "\n@LCL\nD=M\n@SP\nM=M+1\nA=M\nM=D";
+                        outputInstruction.append("\n@LCL\nD=M\n@SP\nM=M+1\nA=M\nM=D");
                         //push ARG
-                        outputInstruction += "\n@ARG\nD=M\n@SP\nM=M+1\nA=M\nM=D";
+                        outputInstruction.append("\n@ARG\nD=M\n@SP\nM=M+1\nA=M\nM=D");
                         //push THIS
-                        outputInstruction += "\n@THIS\nD=M\n@SP\nM=M+1\nA=M\nM=D";
+                        outputInstruction.append("\n@THIS\nD=M\n@SP\nM=M+1\nA=M\nM=D");
                         //push THAT
-                        outputInstruction += "\n@THAT\nD=M\n@SP\nM=M+1\nA=M\nM=D";
+                        outputInstruction.append("\n@THAT\nD=M\n@SP\nM=M+1\nA=M\nM=D");
                         //ARG = SP-n-5
-                        outputInstruction += "\n@SP\nM=M+1\nD=M\n@5\nD=D-A\n@" + Integer.parseInt(args.get(2)) + "\nD=D-A\n@ARG\nM=D";
+                        outputInstruction.append("\n@SP\nM=M+1\nD=M\n@5\nD=D-A\n@" + Integer.parseInt(args.get(2)) + "\nD=D-A\n@ARG\nM=D");
                         //LCL = SP
-                        outputInstruction += "\n@SP\nD=M\n@LCL\nM=D";
+                        outputInstruction.append("\n@SP\nD=M\n@LCL\nM=D");
                         //goto f
-                        outputInstruction += "\n@" + args.get(1) + "\n0;JMP";
+                        outputInstruction.append("\n@" + args.get(1) + "\n0;JMP");
                         //(return-address)
-                        outputInstruction += "\n(RET" + returnIter + ")";
+                        outputInstruction.append("\n(RET" + returnIter + ")");
                         returnIter++;
                         moveF = false;
                         break;
@@ -282,74 +287,74 @@ public class VMTranslator {
             default: 
                 return null;
         }
-        outputInstruction += "\n@SP";
+        outputInstruction.append("\n@SP");
         if(moveF)
-            outputInstruction += "\nM=M+1";
-        outputInstruction += "\nA=M\n\n";
-        return outputInstruction;
+            outputInstruction.append("\nM=M+1");
+        outputInstruction.append("\nA=M\n\n");
+        return outputInstruction.toString();
     }
 
     public static String location(String arg1, String arg2){
-        String out = "";
+        StringBuilder out = new StringBuilder();
         switch(arg1){
             case "local":
-                out += "@" + Integer.parseInt(arg2) + "\nD=A\n";
-                out += "@LCL\nA=M\nA=A+D";
+                out.append("@" + Integer.parseInt(arg2) + "\nD=A\n");
+                out.append("@LCL\nA=M\nA=A+D");
                 break;
             
             case "constant":
-                out += "@" + Integer.parseInt(arg2);
+                out.append("@" + Integer.parseInt(arg2));
                 break;
 
             case "pointer":
-                out += "@" + Integer.parseInt(arg2) + "\nD=A\n";
-                out += "@THIS\nA=A+D";
+                out.append("@" + Integer.parseInt(arg2) + "\nD=A\n");
+                out.append("@THIS\nA=A+D");
                 break;
 
             case "this":
-                out += "@" + Integer.parseInt(arg2) + "\nD=A\n";
-                out += "@THIS\nA=M\nA=A+D";
+                out.append("@" + Integer.parseInt(arg2) + "\nD=A\n");
+                out.append("@THIS\nA=M\nA=A+D");
                 break;
 
             case "that":
-                out += "@" + Integer.parseInt(arg2) + "\nD=A\n";
-                out += "@THAT\nA=M\nA=A+D";
+                out.append("@" + Integer.parseInt(arg2) + "\nD=A\n");
+                out.append("@THAT\nA=M\nA=A+D");
                 break;
 
             case "static":
-                out += "@" + currentFunction + "_static" + arg2 + ".j";
+                out.append("@" + currentFunction + "_static" + arg2 + ".j");
                 break;
 
             case "argument":
-                out += "@" + Integer.parseInt(arg2) + "\nD=A\n";
-                out += "@ARG\nA=M\nA=A+D";
+                out.append("@" + Integer.parseInt(arg2) + "\nD=A\n");
+                out.append("@ARG\nA=M\nA=A+D");
                 break;
 
             case "temp" :
                 switch(Integer.parseInt(arg2)){
                     case 0:
-                        out += "@R5";
+                        out.append("@R5");
                         break;
                     case 1:
-                        out += "@R6";
+                        out.append("@R6");
                         break;
                     case 2:
-                        out += "@R7";
+                        out.append("@R7");
                         break;
                     case 3:
-                        out += "@R8";
+                        out.append("@R8");
                         break;
                     case 4:
-                        out += "@R9";
+                        out.append("@R9");
                         break;
                     case 5:
-                        out += "@R10";
+                        out.append("@R10");
                         break;
                     case 6:
-                        out += "@R11";
+                        out.append("@R11");
                         break;
                     case 7:
-                        out += "@R12";
+                        out.append("@R12");
                         break;
                 }
                 break;
@@ -358,8 +363,8 @@ public class VMTranslator {
                 return null;
         }
         
-        out += "\n";
-        return out;
+        out.append("\n");
+        return out.toString();
     }
 
     public static void createFile(){

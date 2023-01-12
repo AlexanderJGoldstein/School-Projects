@@ -1,18 +1,23 @@
 
 //This program takes in a file path from the user that points to a .asm file, and then converts this file into a .hack file, which will be saved in the same directory with the same file prefix
 //Written by Alex Goldstein
-import java.io.*;
-import java.util.*;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.lang.NumberFormatException;
 import java.util.Hashtable;
+import java.util.Scanner;
+import java.util.LinkedList;
+import java.util.Arrays;
+import java.util.List;
+
+import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import java.lang.NumberFormatException;
 
 public class Assembler {
     static String filePath = "";
 
     // Initialize Hashtable for variables and constant aliases for registers
-    static Hashtable<String, Integer> addressTable = new Hashtable<String, Integer>() {
+    static Hashtable<String, Integer> addressTable = new Hashtable<String, Integer>(4096) {
         {
             for (int i = 0; i < 16; i++) {
                 String key = "R" + i;
@@ -30,10 +35,13 @@ public class Assembler {
 
     public static void main(String[] args) throws Exception {
         // Start file reading
+        StringBuilder dataBuilder = new StringBuilder();
         String data = "";
         FileInputStream fis = new FileInputStream(getFilePath());
         for(byte e : fis.readAllBytes())
-            data += (char) e;
+            dataBuilder.append((char) e);
+        data = dataBuilder.toString();
+        fis.close();
         writeOutBinary(data);
     }
 
@@ -343,14 +351,14 @@ public class Assembler {
     public static void writeToFile(int[][] Instruction, int len) {
         try {
             FileWriter writer = new FileWriter(filePath.substring(0, filePath.length() - 3) + "hack");
-            String output = "";
+            StringBuilder output = new StringBuilder();
             for (int x = 0; x < len; x++) {
                 for (int y = 0; y < Instruction[x].length; y++) {
-                    output += Integer.toString(Instruction[x][y]);
+                    output.append(Integer.toString(Instruction[x][y]));
                 }
-                output += "\n";
+                output.append("\n");
             }
-            writer.write(output);
+            writer.write(output.toString());
             writer.close();
         } catch (IOException e) {
             System.out.println(

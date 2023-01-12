@@ -1,6 +1,6 @@
 //Written by Alex Goldstein
 
-import java.io.*;
+import java.io.FileInputStream;
 import java.util.*;
 import java.io.FileWriter;
 import java.io.IOException;
