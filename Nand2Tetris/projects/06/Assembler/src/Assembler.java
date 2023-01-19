@@ -2,7 +2,6 @@
 //This program takes in a file path from the user that points to a .asm file, and then converts this file into a .hack file, which will be saved in the same directory with the same file prefix
 //Written by Alex Goldstein
 import java.util.Hashtable;
-import java.util.Scanner;
 import java.util.LinkedList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,6 +9,10 @@ import java.util.List;
 import java.io.FileWriter;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.File;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 
 import java.lang.NumberFormatException;
 
@@ -37,7 +40,26 @@ public class Assembler {
         // Start file reading
         StringBuilder dataBuilder = new StringBuilder();
         String data = "";
-        FileInputStream fis = new FileInputStream(getFilePath());
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setMultiSelectionEnabled(false);
+        FileFilter ff = new FileFilter() {
+            public boolean accept(File f){
+                String extension = getExtension(f);
+                if(extension != null && extension.equals("asm"))
+                    return true;
+                return f.isDirectory();
+            }
+
+            public String getDescription(){
+                return null;
+            }
+        };
+        fileChooser.setFileFilter(ff);
+        fileChooser.showDialog(null, "Select");
+        File file = fileChooser.getSelectedFile();
+        filePath = file.getAbsolutePath();
+        FileInputStream fis = new FileInputStream(file);
         for(byte e : fis.readAllBytes())
             dataBuilder.append((char) e);
         data = dataBuilder.toString();
@@ -45,13 +67,15 @@ public class Assembler {
         writeOutBinary(data);
     }
 
-    // Gets the file path from the user's input
-    public static String getFilePath() {
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Please input the file path for the asm file you would like to convert: ");
-        filePath = sc.nextLine();
-        sc.close();
-        return filePath;
+    public static String getExtension(File f) {
+        String ext = null;
+        String s = f.getName();
+        int i = s.lastIndexOf('.');
+
+        if (i > 0 &&  i < s.length() - 1) {
+            ext = s.substring(i+1).toLowerCase();
+        }
+        return ext;
     }
 
     // Separates each line of the ASM file and puts it all into a list, so each

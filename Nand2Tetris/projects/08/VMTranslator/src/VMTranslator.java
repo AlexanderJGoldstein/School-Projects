@@ -1,11 +1,15 @@
 //This takes in VM code from a file designated by the user, and outputs its interpreted hack code in the same path
-import java.util.Scanner;
 import java.util.LinkedList;
 import java.util.List;
 
 import java.io.FileWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 
 public class VMTranslator {
     static String filePath = "";
@@ -19,7 +23,26 @@ public class VMTranslator {
     static boolean sysMainReturn = true;
     static String currentFunction = "";
     public static void main(String[] args) throws Exception {
-        FileInputStream fis = new FileInputStream(getFilePath());
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setMultiSelectionEnabled(false);
+        FileFilter ff = new FileFilter() {
+            public boolean accept(File f){
+                String extension = getExtension(f);
+                if(extension != null && extension.equals("vm"))
+                    return true;
+                return f.isDirectory();
+            }
+
+            public String getDescription(){
+                return null;
+            }
+        };
+        fileChooser.setFileFilter(ff);
+        fileChooser.showDialog(null, "Select");
+        File file = fileChooser.getSelectedFile();
+        filePath = file.getAbsolutePath();
+        FileInputStream fis = new FileInputStream(fileChooser.getSelectedFile());
         createFile();
         StringBuilder dataBuilder = new StringBuilder();
         String data = "";
@@ -73,6 +96,18 @@ public class VMTranslator {
 
         writer.close();
     }
+    
+    public static String getExtension(File f) {
+        String ext = null;
+        String s = f.getName();
+        int i = s.lastIndexOf('.');
+
+        if (i > 0 &&  i < s.length() - 1) {
+            ext = s.substring(i+1).toLowerCase();
+        }
+        return ext;
+    }
+
 
     public static List<String> parseVM(String data){
         List<String> out = new LinkedList<String>();
@@ -93,14 +128,6 @@ public class VMTranslator {
         }
 
         return copy;
-    }
-
-    public static String getFilePath(){
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Please input the file path for the VM file you would like to convert: ");
-        filePath = sc.nextLine();
-        sc.close();
-        return filePath;
     }
 
     public static String parseLine(String in){

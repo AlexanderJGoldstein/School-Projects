@@ -1,0 +1,30 @@
+import java.util.HashMap;
+
+public class BinaryHashTree<E>(){
+    private HashMap<Integer, E> base;
+    private int size;
+    public BinaryHashTree(){
+        this.base = new HashMap<Integer, E>();
+        this.size = 0;
+    }
+
+    public BinaryHashTree clear(){
+        this.base = new HashMap<Integer, E>();
+        this.size = 0;
+        return this;
+    }
+
+    public boolean add(E obj){
+        this.size++;
+        this.base.add(this.size, obj);
+    }
+
+    public int left(int cur){
+        return cur*2;
+    }
+
+    public int right(int cur){
+        return cur*2 + 1;
+    }
+    
+}

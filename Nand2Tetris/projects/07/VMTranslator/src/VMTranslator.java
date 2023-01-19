@@ -4,8 +4,10 @@
  */
 
 import java.io.*;
-import org.apache.commons.io.*;
 import java.util.*;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 
 
 import java.io.FileWriter;
@@ -16,9 +18,31 @@ public class VMTranslator {
     static FileWriter writer;
     static int NumCompare = 1;
     public static void main(String[] args) throws Exception {
-        FileInputStream fis = new FileInputStream(getFilePath());
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setMultiSelectionEnabled(false);
+        FileFilter ff = new FileFilter() {
+            public boolean accept(File f){
+                String extension = getExtension(f);
+                if(extension != null && extension.equals("asm"))
+                    return true;
+                return f.isDirectory();
+            }
+
+            public String getDescription(){
+                return null;
+            }
+        };
+        fileChooser.setFileFilter(ff);
+        fileChooser.showDialog(null, "Select");
+
+        FileInputStream fis = new FileInputStream(fileChooser.getSelectedFile());
         createFile();
-        String data = IOUtils.toString(fis, "UTF-8");
+        String data;
+        StringBuilder dataBuilder = new StringBuilder();
+        for(byte b : fis.readAllBytes())
+            dataBuilder.append((char) b);
+        data = dataBuilder.toString();
         String[] instruction = parseVM(data);
         String out = "";
         for (String string : instruction) {
@@ -27,6 +51,18 @@ public class VMTranslator {
         writeOut(out);
         writer.close();
     }
+    
+    public static String getExtension(File f) {
+        String ext = null;
+        String s = f.getName();
+        int i = s.lastIndexOf('.');
+
+        if (i > 0 &&  i < s.length() - 1) {
+            ext = s.substring(i+1).toLowerCase();
+        }
+        return ext;
+    }
+
     public static String[] parseVM(String data){
         List<String> out = new LinkedList<String>();
         while(data.contains("\n")){
@@ -42,14 +78,6 @@ public class VMTranslator {
         return ArrayOut;
     }
 
-    public static String getFilePath(){
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Please input the file path for the VM file you would like to convert: ");
-        filePath = sc.nextLine();
-        sc.close();
-        return filePath;
-    }
-
     public static void parseLine(String in){
         List<String> args = new LinkedList<String>();
         while(in.contains(" ")){
@@ -58,49 +86,49 @@ public class VMTranslator {
         }
         args.add(in);
         System.out.println(args);
-        String outputInstruction = "";
+        StringBuilder outputInstruction = new StringBuilder();
         boolean moveF = true;
         switch (args.size()){
             case 1:
-                outputInstruction += "@SP\nM=M-1\nA=M\n";
+                outputInstruction.append("@SP\nM=M-1\nA=M\n");
                 String inst = new String(args.get(0));
                 switch (inst){
                     case "add":
-                        outputInstruction += "D=M\n@SP\nM=M-1\nA=M\nM=D+M";
+                        outputInstruction.append("D=M\n@SP\nM=M-1\nA=M\nM=D+M");
                         break;
                     
                     case "sub":
-                        outputInstruction += "D=M\n@SP\nM=M-1\nA=M\nM=M-D";
+                        outputInstruction.append("D=M\n@SP\nM=M-1\nA=M\nM=M-D");
                         break;
 
                     case "and":
-                        outputInstruction += "D=M\n@SP\nM=M-1\nA=M\nM=D&M";
+                        outputInstruction.append("D=M\n@SP\nM=M-1\nA=M\nM=D&M");
                         break;
                     
                     case "or":
-                        outputInstruction += "D=M\n@SP\nM=M-1\nA=M\nM=D|M";
+                        outputInstruction.append("D=M\n@SP\nM=M-1\nA=M\nM=D|M");
                         break;
 
                     case "not":
-                        outputInstruction += "M=!M";
+                        outputInstruction.append("M=!M");
                         break;
 
                     case "neg":
-                        outputInstruction += "M=-M";
+                        outputInstruction.append("M=-M");
                         break;
 
                     case "lt":
-                        outputInstruction += "D=M\n@SP\nM=M-1\nA=M\nD=M-D\nM=-1\n@COMP" + NumCompare + "\nD;JLT\n@SP\nA=M\nM=0\n(COMP" + NumCompare + ")";
+                        outputInstruction.append("D=M\n@SP\nM=M-1\nA=M\nD=M-D\nM=-1\n@COMP" + NumCompare + "\nD;JLT\n@SP\nA=M\nM=0\n(COMP" + NumCompare + ")");
                         NumCompare++;
                         break;
 
                     case "gt":
-                        outputInstruction += "D=M\n@SP\nM=M-1\nA=M\nD=M-D\nM=-1\n@COMP" + NumCompare + "\nD;JGT\n@SP\nA=M\nM=0\n(COMP" + NumCompare + ")";
+                        outputInstruction.append("D=M\n@SP\nM=M-1\nA=M\nD=M-D\nM=-1\n@COMP" + NumCompare + "\nD;JGT\n@SP\nA=M\nM=0\n(COMP" + NumCompare + ")");
                         NumCompare++;
                         break;
 
                     case "eq":
-                        outputInstruction += "D=M\n@SP\nM=M-1\nA=M\nD=M-D\nM=-1\n@COMP" + NumCompare + "\nD;JEQ\n@SP\nA=M\nM=0\n(COMP" + NumCompare + ")";
+                        outputInstruction.append("D=M\n@SP\nM=M-1\nA=M\nD=M-D\nM=-1\n@COMP" + NumCompare + "\nD;JEQ\n@SP\nA=M\nM=0\n(COMP" + NumCompare + ")");
                         NumCompare++;
                         break;
 
@@ -116,18 +144,18 @@ public class VMTranslator {
                 switch (args.get(0)){
                     case "pop":
                         moveF = false;
-                        outputInstruction += "@SP\nM=M-1\nA=M\nD=M\n";
-                        outputInstruction += location(args.get(1), args.get(2));
-                        outputInstruction += "M=D";
+                        outputInstruction.append("@SP\nM=M-1\nA=M\nD=M\n");
+                        outputInstruction.append(location(args.get(1), args.get(2)));
+                        outputInstruction.append("M=D");
                         break;
                     
                     case "push":
-                        outputInstruction += location(args.get(1), args.get(2));
+                        outputInstruction.append(location(args.get(1), args.get(2)));
                         if(args.get(1).contains("constant") )
-                            outputInstruction += "D=A\n";
+                            outputInstruction.append("D=A\n");
                         else
-                            outputInstruction += "D=M\n";
-                        outputInstruction += "@SP\nA=M\nM=D";
+                            outputInstruction.append("D=M\n");
+                        outputInstruction.append("@SP\nA=M\nM=D");
                         break;
                     
                     default:
@@ -138,11 +166,11 @@ public class VMTranslator {
             default: 
                 return;
             }
-        outputInstruction += "\n@SP";
+        outputInstruction.append("\n@SP");
         if(moveF)
-            outputInstruction += "\nM=M+1";
-        outputInstruction += "\nA=M\n\n";
-        writeOut(outputInstruction);
+            outputInstruction.append("\nM=M+1");
+        outputInstruction.append("\nA=M\n\n");
+        writeOut(outputInstruction.toString());
     }
 
     public static String location(String arg1, String arg2){
@@ -227,6 +255,7 @@ public class VMTranslator {
             newFileName = filePath.substring(0, filePath.length()-2) + "asm";
             writer = new FileWriter(newFileName);
             writer.write("");
+            writer.close();
         } catch (IOException e) {
             System.out.println("The output file exists but is a directory, doesn't exist but can't be created, or cannot be opened for any other reason.");
             e.printStackTrace();
@@ -236,6 +265,7 @@ public class VMTranslator {
     public static void writeOut(String text){
         try{
             writer.write(text);
+            writer.close();
         } catch (IOException e) {
             System.out.println("An Error Occurred");
             e.printStackTrace();
