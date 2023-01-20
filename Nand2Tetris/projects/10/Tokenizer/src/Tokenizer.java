@@ -89,7 +89,27 @@ public class Tokenizer {
 
         for (StringBuilder e : tokenList) {
             if(symbols.contains(e.toString())){
-                output.append("<symbol> " + e + " </symbol>\n");
+                switch(e.toString()) {
+                    case "<":
+                        output.append("<symbol> " + "&lt;" + " </symbol>\n");
+                        break;
+
+                    case ">":
+                        output.append("<symbol> " + "&gt;" + " </symbol>\n");
+                        break;
+
+                    case "&":
+                        output.append("<symbol> " + "&amp;" + " </symbol>\n");
+                        break;
+                    
+                    case "\"":
+                        output.append("<symbol> " + "&quot;" + " </symbol>\n");
+                        break;
+
+                    default:
+                        output.append("<symbol> " + e + " </symbol>\n");
+                        break;
+                }
             } else if (keywords.contains(e.toString())){
                 output.append("<keyword> " + e + " </keyword>\n");
             } else if (e.charAt(0) == '"') {
@@ -101,7 +121,7 @@ public class Tokenizer {
             }
         }
         
-        output.append("</tokens>");
+        output.append("</tokens>\n");
         write(output.toString());
     }
 
